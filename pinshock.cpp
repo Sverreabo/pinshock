@@ -189,13 +189,16 @@ vector<board_t> get_moves(board_t board) // Finds possible moves for the provide
 void solve(board_t board, unsigned depth = 0)
 {
     vector<board_t> moves = get_moves(board);
-    // solution[depth] =
+    solution[depth] = board;
 
-    if (depth == 33)
+    if (depth > highest_depth)
     {
         highest_depth = depth;
         cout << "\nDepth: " << depth;
-        print_board(board);
+        for (size_t i = 0; i <= depth; i++)
+        {
+            print_board(solution[i]);
+        }
     }
 
     shuffle(moves.begin(), moves.end(), RNG);
@@ -214,8 +217,6 @@ void solve(board_t board, unsigned depth = 0)
     }
 
     solved_cache.insert(board);
-
-    // TODO: Should update solution list
 }
 
 int main()

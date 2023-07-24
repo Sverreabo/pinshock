@@ -17,16 +17,20 @@ using board_t = uint64_t; // The board is represented as a 64-bit bit-board. A o
 #define WIDTH 7
 #define HEIGHT 5
 
+int num_iterations = 0;
+
 const unsigned DOUBLE_WIDTH = WIDTH * 2;                        // Useful for some calculations
 const unsigned SLOTS = WIDTH * HEIGHT;                          // The total number of slots on the board
 const board_t FULL_BOARD = ((board_t)1 << SLOTS) - 1;           // A board where every slot has a pin
 const board_t FULL_BOARD_2W_SHIFT = FULL_BOARD << DOUBLE_WIDTH; // FULL_BOARD left-shifted by the double width of the board,
                                                                 //  meaning that the board is moved two rows upwards
 
-unordered_set<board_t> solved_cache;
-
-board_t solution[SLOTS]; // The current solution from our recursive call to solve() is stored as a list of boards
+board_t solution[SLOTS]; // The current solution from the recursive call to solve() is stored as a list of boards
 unsigned highest_depth = 30;
+
+unordered_set<board_t> solved_cache;
+unordered_set<board_t> empty_cache; // solved_cache is reset to empty_cache every CACHE_CLEAR_SIZE calls to solve()
+const unsigned CACHE_CLEAR_SIZE = 10000;
 
 board_t generate_horizontal_mask(unsigned left_column, unsigned right_column)
 {
@@ -188,13 +192,20 @@ vector<board_t> get_moves(board_t board) // Finds possible moves for the provide
 
 void solve(board_t board, unsigned depth = 0)
 {
+    num_iterations++;
+
+    if (num_iterations % CACHE_CLEAR_SIZE == 0)
+    {
+        solved_cache = unordered_set<board_t>(empty_cache);
+    }
+
     vector<board_t> moves = get_moves(board);
     solution[depth] = board;
 
     if (depth > highest_depth)
     {
         highest_depth = depth;
-        cout << "\nDepth: " << depth;
+        cout << "Depth: " << depth << "\n";
         for (size_t i = 0; i <= depth; i++)
         {
             print_board(solution[i]);
@@ -204,7 +215,7 @@ void solve(board_t board, unsigned depth = 0)
     shuffle(moves.begin(), moves.end(), RNG);
     size_t size = moves.size();
 
-    size_t max_moves = 4;
+    size_t max_moves = 2;
 
     for (size_t i = 0; i < max_moves && i < size; i++)
     {
@@ -216,12 +227,12 @@ void solve(board_t board, unsigned depth = 0)
         }
     }
 
-    solved_cache.insert(board);
+    solved_cache.emplace(board);
 }
 
 int main()
 {
-    solved_cache.max_load_factor(100);
+    empty_cache.reserve(CACHE_CLEAR_SIZE * 4);
 
     bool bool_board[HEIGHT][WIDTH] = {
         {0, 1, 1, 1, 1, 1, 1},

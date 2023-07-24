@@ -28,7 +28,7 @@ unordered_set<board_t> solved_cache;
 board_t solution[SLOTS]; // The current solution from our recursive call to solve() is stored as a list of boards
 unsigned highest_depth = 30;
 
-board_t generate_horisontal_mask(unsigned left_column, unsigned right_column)
+board_t generate_horizontal_mask(unsigned left_column, unsigned right_column)
 {
     board_t result = 0;
 
@@ -47,8 +47,8 @@ board_t generate_horisontal_mask(unsigned left_column, unsigned right_column)
     return result;
 }
 
-const board_t LEFT_MASK = generate_horisontal_mask(WIDTH, 2);
-const board_t RIGHT_MASK_2L_SHIFT = generate_horisontal_mask(WIDTH - 2, 0) << 2;
+const board_t LEFT_MASK = generate_horizontal_mask(WIDTH, 2);
+const board_t RIGHT_MASK_2L_SHIFT = generate_horizontal_mask(WIDTH - 2, 0) << 2;
 
 void print_binary(uint64_t n)
 {

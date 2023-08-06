@@ -30,7 +30,7 @@ unsigned highest_depth = 30;
 
 unordered_set<board_t> solved_cache;
 unordered_set<board_t> empty_cache; // solved_cache is reset to empty_cache every CACHE_CLEAR_SIZE calls to solve()
-const unsigned CACHE_CLEAR_SIZE = 10000;
+const unsigned CACHE_CLEAR_SIZE = 10000 * 100;
 
 board_t generate_horizontal_mask(unsigned left_column, unsigned right_column)
 {

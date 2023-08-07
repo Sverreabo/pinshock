@@ -17,7 +17,7 @@ using board_t = uint64_t; // The board is represented as a 64-bit bit-board. A o
 #define WIDTH 7
 #define HEIGHT 5
 
-int num_iterations = 0;
+long num_iterations = 0;
 
 const unsigned DOUBLE_WIDTH = WIDTH * 2;                        // Useful for some calculations
 const unsigned SLOTS = WIDTH * HEIGHT;                          // The total number of slots on the board
@@ -244,4 +244,5 @@ int main()
     board_t board = convert_board(bool_board);
 
     solve(board);
+    cout << "# of iterations: " << num_iterations << "\n";
 }

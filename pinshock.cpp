@@ -16,10 +16,12 @@ using board_t = uint64_t; // The board is represented as a 64-bit bit-board. A o
 
 #define WIDTH 7
 #define HEIGHT 5
+#define MAX_MOVES 2
 
 #include "pinshock.h"
 
 long num_iterations = 0;
+long empty_cache_size = 0;
 
 const unsigned DOUBLE_WIDTH = WIDTH * 2;              // Useful for some calculations
 const unsigned SLOTS = WIDTH * HEIGHT;                // The total number of slots on the board
@@ -38,11 +40,12 @@ const board_t FULL_BOARD_2W_SHIFT = FULL_BOARD << DOUBLE_WIDTH; // FULL_BOARD le
                                                                 //  meaning that the board is moved two rows upwards
 
 board_t solution[SLOTS]; // The current solution from the recursive call to solve() is stored as a list of boards
-unsigned highest_depth = 30;
+int lowest_depth = 3;
+int n_start_pins;
 
 unordered_set<board_t> solved_cache;
 unordered_set<board_t> empty_cache; // solved_cache is reset to empty_cache every CACHE_CLEAR_SIZE calls to solve()
-const long CACHE_CLEAR_SIZE = 10000 * 3000;
+const long CACHE_CLEAR_SIZE = 10000 * 1000;
 
 board_t generate_horizontal_mask(unsigned left_column, unsigned right_column)
 {
@@ -86,12 +89,26 @@ void print_board(board_t board)
         for (unsigned x = 0; x < WIDTH; x++)
         {
             output.insert(output.begin(), ' ');
-            output.insert(output.begin(), (board & 1 ? 'X' : 'O'));
+            output.insert(output.begin(), (board & 1 ? 'X' : '\''));
             board >>= 1;
         }
     }
-    cout << "\n"
-         << output;
+    cout << output;
+}
+
+// Counts the number of pins in a board
+int count_board(board_t board)
+{
+    int n = 0;
+    while (board > 0)
+    {
+        if (board & 1)
+        {
+            n++;
+        }
+        board >>= 1;
+    }
+    return n;
 }
 
 board_t convert_board(bool bool_board[HEIGHT][WIDTH])
@@ -202,7 +219,16 @@ vector<board_t> get_moves(board_t board) // Finds possible moves for the provide
     return moves;
 }
 
-void solve(board_t board, unsigned depth = 0)
+void print_solution(int depth = 1, int start = n_start_pins)
+{
+    for (int i = start; i >= depth; i--)
+    {
+        cout << "--------------\n";
+        print_board(solution[i]);
+    }
+}
+
+void solve(board_t board, int depth = 0)
 {
     if (num_iterations % CACHE_CLEAR_SIZE == 0)
     {
@@ -214,33 +240,30 @@ void solve(board_t board, unsigned depth = 0)
     vector<board_t> moves = get_moves(board);
     solution[depth] = board;
 
-    if (depth > highest_depth)
+    if (depth < lowest_depth)
     {
-        highest_depth = depth;
+        lowest_depth = depth;
         cout << "Depth: " << depth << "\n";
-        for (size_t i = 0; i <= depth; i++)
-        {
-            print_board(solution[i]);
-        }
+        print_solution(depth);
     }
 
     shuffle(moves.begin(), moves.end(), RNG);
     size_t size = moves.size();
+    size = min(size, (size_t)MAX_MOVES);
 
-    size_t max_moves = 2;
-
-    for (size_t i = 0; i < max_moves && i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         board_t new_board = moves[i];
         if (!solved_cache.contains(new_board))
         {
 
-            solve(new_board, depth + 1);
+            solve(new_board, depth - 1);
         }
     }
 
-    if (depth < 12)
+    if (depth > 14)
     {
+        empty_cache_size++;
         empty_cache.emplace(board);
     }
     solved_cache.emplace(board);
@@ -266,8 +289,12 @@ int main()
     //     {0, 0, 1, 1, 1, 0, 0},
     //     {0, 0, 1, 1, 1, 0, 0},
     // };
+
     board_t board = convert_board(bool_board);
 
-    solve(board);
+    n_start_pins = count_board(board);
+
+    solve(board, n_start_pins);
     cout << "# of iterations: " << num_iterations << "\n";
+    cout << "empty_cache_size: " << empty_cache_size << "\n";
 }

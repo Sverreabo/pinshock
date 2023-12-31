@@ -1,11 +1,11 @@
-pinshock.o: pinshock.cpp
-	g++ -Wall -std=gnu++2a -O3 -s pinshock.cpp -o pinshock.o 
+pinshock.out: pinshock.cpp
+	g++ -Wall -std=gnu++2a -O3 -s pinshock.cpp -o pinshock.out 
 
-run: pinshock.o
-	./pinshock.o
+run: pinshock.out
+	./pinshock.out
 
-time: pinshock.o
-	time ./pinshock.o
+time: pinshock.out
+	time ./pinshock.out
 
-perf: pinshock.o
-	sudo perf stat ./pinshock.o
+perf: pinshock.out
+	sudo perf stat ./pinshock.out

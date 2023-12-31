@@ -330,6 +330,7 @@ int main(int argc, char **argv)
     board_t board = convert_board(bool_board);
 
     n_start_pins = count_board(board);
+    cout << n_start_pins << "\n";
 
     solve(board, n_start_pins);
     cout << "# of iterations: " << num_iterations << "\n";

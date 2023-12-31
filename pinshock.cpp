@@ -45,7 +45,7 @@ const board_t FULL_BOARD_2W_SHIFT = FULL_BOARD << DOUBLE_WIDTH; // FULL_BOARD le
                                                                 //  meaning that the board is moved two rows upwards
 
 board_t solution[SLOTS]; // The current solution from the recursive call to solve() is stored as a list of boards
-int lowest_depth = 3;
+int fewest_pins_left = 3;
 int n_start_pins;
 
 unordered_set<board_t> solved_cache;
@@ -224,16 +224,16 @@ vector<board_t> get_moves(board_t board)
     return moves;
 }
 
-void print_solution(int depth = 1, int start = n_start_pins)
+void print_solution(int final_pins_left = 1, int start = n_start_pins)
 {
-    for (int i = start; i >= depth; i--)
+    for (int i = start; i >= final_pins_left; i--)
     {
         cout << "--------------\n";
         print_board(solution[i]);
     }
 }
 
-void solve(board_t board, int depth)
+void solve(board_t board, int pins_left)
 {
     if (num_iterations % CACHE_CLEAR_SIZE == 0)
     {
@@ -243,19 +243,19 @@ void solve(board_t board, int depth)
     num_iterations++;
 
     vector<board_t> moves = get_moves(board);
-    solution[depth] = board;
+    solution[pins_left] = board;
 
-    if (depth < lowest_depth)
+    if (pins_left < fewest_pins_left)
     {
-        lowest_depth = depth;
-        cout << "Depth: " << depth << "\n";
+        fewest_pins_left = pins_left;
+        cout << "\nPins left: " << pins_left << "\n";
         if (do_print_solutions)
         {
-            print_solution(depth);
+            print_solution(pins_left);
         }
     }
 
-    if (depth == 1)
+    if (pins_left == 1)
     {
         num_solutions++;
     }
@@ -267,19 +267,19 @@ void solve(board_t board, int depth)
     for (size_t i = 0; i < size; i++)
     {
         board_t new_board = moves[i];
-        if (!(depth - 1 > cache_ignore_bottom) || !solved_cache.contains(new_board))
+        if (!(pins_left - 1 > cache_ignore_bottom) || !solved_cache.contains(new_board))
         {
 
-            solve(new_board, depth - 1);
+            solve(new_board, pins_left - 1);
         }
     }
 
-    if (depth > 18)
+    if (pins_left > 18)
     {
         empty_cache_size++;
         empty_cache.emplace(board);
     }
-    if (depth > cache_ignore_bottom)
+    if (pins_left > cache_ignore_bottom)
     {
         solved_cache.emplace(board);
     }

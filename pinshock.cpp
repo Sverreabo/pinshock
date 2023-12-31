@@ -15,26 +15,31 @@ auto RNG = default_random_engine{(long unsigned)time(NULL)};
 using board_t = uint64_t; // The board is represented as a 64-bit bit-board. A one represents a pin and a zero an empty slot
 
 #define WIDTH 7
-#define HEIGHT 5
+#define HEIGHT 7
 #define MAX_MOVES 2
 
 #include "pinshock.h"
 
 long num_iterations = 0;
+long num_solutions = 0;
 long empty_cache_size = 0;
 
-const unsigned DOUBLE_WIDTH = WIDTH * 2;              // Useful for some calculations
-const unsigned SLOTS = WIDTH * HEIGHT;                // The total number of slots on the board
-const board_t FULL_BOARD = ((board_t)1 << SLOTS) - 1; // A board where every slot has a pin
-// const board_t FULL_BOARD = convert_board((bool[WIDTH][HEIGHT]){
-//     {0, 0, 1, 1, 1, 0, 0},
-//     {0, 0, 1, 1, 1, 0, 0},
-//     {1, 1, 1, 1, 1, 1, 1},
-//     {1, 1, 1, 1, 1, 1, 1},
-//     {1, 1, 1, 1, 1, 1, 1},
-//     {0, 0, 1, 1, 1, 0, 0},
-//     {0, 0, 1, 1, 1, 0, 0},
-// });
+// Options
+int cache_ignore_bottom = 8;
+bool do_print_solutions = true;
+
+const unsigned DOUBLE_WIDTH = WIDTH * 2; // Useful for some calculations
+const unsigned SLOTS = WIDTH * HEIGHT;   // The total number of slots on the board
+// const board_t FULL_BOARD = ((board_t)1 << SLOTS) - 1; // A board where every slot has a pin
+const board_t FULL_BOARD = convert_board((bool[WIDTH][HEIGHT]){
+    {0, 0, 1, 1, 1, 0, 0},
+    {0, 0, 1, 1, 1, 0, 0},
+    {1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1},
+    {0, 0, 1, 1, 1, 0, 0},
+    {0, 0, 1, 1, 1, 0, 0},
+});
 
 const board_t FULL_BOARD_2W_SHIFT = FULL_BOARD << DOUBLE_WIDTH; // FULL_BOARD left-shifted by the double width of the board,
                                                                 //  meaning that the board is moved two rows upwards
@@ -125,7 +130,7 @@ board_t convert_board(bool bool_board[HEIGHT][WIDTH])
     return result;
 }
 
-vector<board_t> get_moves(board_t board) // Finds possible moves for the provided board and puts them into moves[]. Returns number of moves
+vector<board_t> get_moves(board_t board)
 {
     vector<board_t> moves;
 
@@ -228,7 +233,7 @@ void print_solution(int depth = 1, int start = n_start_pins)
     }
 }
 
-void solve(board_t board, int depth = 0)
+void solve(board_t board, int depth)
 {
     if (num_iterations % CACHE_CLEAR_SIZE == 0)
     {
@@ -244,7 +249,15 @@ void solve(board_t board, int depth = 0)
     {
         lowest_depth = depth;
         cout << "Depth: " << depth << "\n";
-        print_solution(depth);
+        if (do_print_solutions)
+        {
+            print_solution(depth);
+        }
+    }
+
+    if (depth == 1)
+    {
+        num_solutions++;
     }
 
     shuffle(moves.begin(), moves.end(), RNG);
@@ -254,41 +267,65 @@ void solve(board_t board, int depth = 0)
     for (size_t i = 0; i < size; i++)
     {
         board_t new_board = moves[i];
-        if (!solved_cache.contains(new_board))
+        if (!(depth - 1 > cache_ignore_bottom) || !solved_cache.contains(new_board))
         {
 
             solve(new_board, depth - 1);
         }
     }
 
-    if (depth > 14)
+    if (depth > 18)
     {
         empty_cache_size++;
         empty_cache.emplace(board);
     }
-    solved_cache.emplace(board);
+    if (depth > cache_ignore_bottom)
+    {
+        solved_cache.emplace(board);
+    }
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    for (int i = 1; i < argc; i++)
+    {
+        int number = atoi(argv[i]);
+        switch (i)
+        {
+        case 1:
+            cache_ignore_bottom = number;
+            cout << "Set cache_ignore_bottom=" << cache_ignore_bottom << "\n";
+            break;
+
+        case 2:
+            do_print_solutions = (bool)number;
+            cout << "Set do_print_solutions=" << do_print_solutions << "\n";
+            break;
+        default:
+            cout << "(Number ignored" << number << ")\n";
+            break;
+        }
+    }
+
     empty_cache.reserve(CACHE_CLEAR_SIZE * 4);
 
-    bool bool_board[HEIGHT][WIDTH] = {
-        {0, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
-    };
     // bool bool_board[HEIGHT][WIDTH] = {
-    //     {0, 0, 1, 1, 1, 0, 0},
-    //     {0, 0, 1, 1, 1, 0, 0},
+    //     {0, 1, 1, 1, 1, 1, 1},
     //     {1, 1, 1, 1, 1, 1, 1},
-    //     {1, 1, 1, 0, 1, 1, 1},
     //     {1, 1, 1, 1, 1, 1, 1},
-    //     {0, 0, 1, 1, 1, 0, 0},
-    //     {0, 0, 1, 1, 1, 0, 0},
+    //     {1, 1, 1, 1, 1, 1, 1},
+    //     {1, 1, 1, 1, 1, 1, 1},
     // };
+
+    bool bool_board[HEIGHT][WIDTH] = {
+        {0, 0, 1, 1, 1, 0, 0},
+        {0, 0, 1, 1, 1, 0, 0},
+        {1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 0, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1},
+        {0, 0, 1, 1, 1, 0, 0},
+        {0, 0, 1, 1, 1, 0, 0},
+    };
 
     board_t board = convert_board(bool_board);
 
@@ -296,5 +333,6 @@ int main()
 
     solve(board, n_start_pins);
     cout << "# of iterations: " << num_iterations << "\n";
+    cout << "# of solutions: " << num_solutions << "\n";
     cout << "empty_cache_size: " << empty_cache_size << "\n";
 }

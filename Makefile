@@ -1,11 +1,18 @@
-pinshock.out: pinshock.cpp
-	g++ -Wall -std=gnu++2a -O3 -s pinshock.cpp -o pinshock.out 
+EXE := new_pinshock.out
+OBJS := new_pinshock.o pingame/pingame.o pingame/bitboard.o
+CXX := g++
+CXXFLAGS := -Wall -Werror -std=gnu++2a -O2
 
-run: pinshock.out
-	./pinshock.out
+all: $(EXE)
 
-time: pinshock.out
-	time ./pinshock.out
+run: $(EXE)
+	./$(EXE)
 
-perf: pinshock.out
-	sudo perf stat ./pinshock.out
+$(EXE): $(OBJS)
+	$(CXX) $(OBJS) -o $(EXE)
+
+$(OBJS): %.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+clean:
+	rm -f $(OBJS) $(EXE)

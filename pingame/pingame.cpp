@@ -18,10 +18,15 @@ auto RNG = default_random_engine{(long unsigned)time(NULL)};
 Game::Game(vector<vector<bool>>& bool_board)
 {
     vector<vector<bool>> legal_slots;
-    Game(bool_board, legal_slots);
+    Construct(bool_board, legal_slots);
 }
 
 Game::Game(vector<vector<bool>>& bool_board, vector<vector<bool>>& legal_slots)
+{
+    Construct(bool_board, legal_slots);
+}
+
+void Game::Construct(vector<vector<bool>>& bool_board, vector<vector<bool>>& legal_slots)
 {
     height = bool_board.size();
     width = bool_board.at(0).size();
@@ -60,6 +65,7 @@ Game::~Game()
 
 void Game::printGameBoard()
 {
+    cout << height << "x" << width << "\n";
     printBoard(board, height, width);
 }
 
@@ -177,8 +183,12 @@ vector<board_t> Game::getMovesFromBoard(board_t _board)
 void Game::solve()
 {
     num_iterations = 0;
-    empty_cache.reserve(CACHE_CLEAR_SIZE * 4);
-    solveRecursive(board, n_start_pins);
+    
+    bitset_cache.init(CACHE_CLEAR_SIZE);
+
+    while (solveRecursive(board, n_start_pins) == 0) {
+        max_moves++;
+    }
 }
 
 // Returns 1 if solution found
@@ -187,7 +197,7 @@ int Game::solveRecursive(board_t _board, int pins_left)
     if (num_iterations % CACHE_CLEAR_SIZE == 0)
     {
         cout << "Cache cleared\n";
-        solved_cache = unordered_set<board_t>(empty_cache);
+        bitset_cache.clear();
     }
     num_iterations++;
 
@@ -202,25 +212,21 @@ int Game::solveRecursive(board_t _board, int pins_left)
 
     shuffle(moves.begin(), moves.end(), RNG);
     size_t size = moves.size();
-    size = min(size, (size_t)MAX_MOVES);
+    size = min(size, (size_t)max_moves);
 
     for (size_t i = 0; i < size; i++)
     {
         board_t new_board = moves[i];
-        if (!(pins_left - 1 > cache_ignore_bottom) || !solved_cache.contains(new_board))
+        if (!(pins_left - 1 > cache_ignore_bottom) || !bitset_cache.get(new_board))
         {
 
             if (solveRecursive(new_board, pins_left - 1)) return 1;
         }
     }
 
-    if (pins_left > 18)
-    {
-        empty_cache.emplace(_board);
-    }
     if (pins_left > cache_ignore_bottom)
     {
-        solved_cache.emplace(_board);
+        bitset_cache.set(_board);
     }
 
     return 0;

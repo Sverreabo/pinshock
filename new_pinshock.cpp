@@ -23,8 +23,19 @@ int main() {
         {0, 0, 1, 1, 1, 0, 0},
         {0, 0, 1, 1, 1, 0, 0},
     };
-    auto game = PinGame::Game(bool_board, legal_slots);
+    // auto game = PinGame::Game(bool_board, legal_slots);
 
-    game.solve();
-    game.printSolution();
+    vector<vector<bool>> second_board = {
+        {0, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1},
+    };
+    
+
+    auto second_game = PinGame::Game(second_board);
+    
+    second_game.solve();
+    second_game.printSolution();
 }

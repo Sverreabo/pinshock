@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include <unordered_set>
 
 #include "bitboard.hpp"
-
+#include "../bitset/bitset.hpp"
 
 
 namespace PinGame
@@ -27,15 +26,17 @@ class Game
     board_t Cright_mask_2l_shift;
 
     uint64_t num_iterations = 0;
-    std::unordered_set<board_t> solved_cache;
-    std::unordered_set<board_t> empty_cache; // solved_cache is reset to empty_cache every CACHE_CLEAR_SIZE calls to solve()
+
     const uint64_t CACHE_CLEAR_SIZE = 10000 * 1000;
+    BitSet::BitSet bitset_cache;
     
-    int MAX_MOVES = 2;
+    int max_moves = 2;
     int cache_ignore_bottom = 8;
 
 
     int solveRecursive(board_t _board, int pins_left);
+
+    void Construct(std::vector<std::vector<bool>>& bool_board, std::vector<std::vector<bool>>& legal_slots);
 public:
     Game(std::vector<std::vector<bool>>& bool_board);
     Game(std::vector<std::vector<bool>>& bool_board, std::vector<std::vector<bool>>& legal_slots);

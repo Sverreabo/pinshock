@@ -184,7 +184,7 @@ void Game::solve()
 {
     num_iterations = 0;
     
-    bitset_cache.init(CACHE_CLEAR_SIZE);
+    bitset_cache.init(cache_clear_size);
 
     while (solveRecursive(board, n_start_pins) == 0) {
         max_moves++;
@@ -194,7 +194,7 @@ void Game::solve()
 // Returns 1 if solution found
 int Game::solveRecursive(board_t _board, int pins_left)
 {
-    if (num_iterations % CACHE_CLEAR_SIZE == 0)
+    if (num_iterations % cache_clear_size == 0)
     {
         cout << "Cache cleared\n";
         bitset_cache.clear();

@@ -27,7 +27,7 @@ class Game
 
     uint64_t num_iterations = 0;
 
-    const uint64_t CACHE_CLEAR_SIZE = 10000 * 1000;
+    const uint64_t cache_clear_size = 10000 * 1000;
     BitSet::BitSet bitset_cache;
     
     int max_moves = 2;

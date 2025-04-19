@@ -233,4 +233,8 @@ int Game::solveRecursive(board_t _board, int pins_left)
 }
 
 
+void Game::set_cache_clear_size(uint64_t n) {
+    cache_clear_size = n;
+}
+
 } // namespace PinGame

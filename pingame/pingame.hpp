@@ -50,6 +50,7 @@ public:
     std::vector<board_t> getMovesFromBoard(board_t board);
     void solve();
 
+    void set_cache_clear_size(uint64_t n);
 
 };
 

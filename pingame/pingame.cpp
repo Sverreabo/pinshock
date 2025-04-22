@@ -89,7 +89,8 @@ vector<board_t> Game::getMoves() {
 
 vector<board_t> Game::getMovesFromBoard(board_t _board)
 {
-    vector<board_t> moves;
+    static vector<board_t> moves;
+    moves.clear();
 
     board_t board_lshift = _board << width;
     board_t board_2lshift = board_lshift << width;

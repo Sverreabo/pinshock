@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <ctime>
 #include <algorithm>
 #include <random>
 
@@ -12,7 +11,8 @@ using namespace std;
 namespace PinGame
 {
 
-auto RNG = default_random_engine{(long unsigned)time(NULL)};
+random_device os_seed;
+auto RNG = default_random_engine{(long unsigned)os_seed()};
 
 
 Game::Game(vector<vector<bool>>& bool_board)
@@ -186,10 +186,18 @@ void Game::solve()
     
     bitset_cache.init(cache_clear_size);
 
+    int n_tries_current = 0;
+    const int TRIES_UNTIL_CLEAR = 3;
+
     while (solveRecursive(board, n_start_pins) == 0) {
-        max_moves++;
+        n_tries_current++;
+        if (n_tries_current >= TRIES_UNTIL_CLEAR) {
+            bitset_cache.clear();
+            n_tries_current = 0;
+        }
     }
 }
+
 
 // Returns 1 if solution found
 int Game::solveRecursive(board_t _board, int pins_left)

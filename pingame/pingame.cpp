@@ -219,13 +219,16 @@ int Game::solveRecursive(board_t _board, int pins_left)
         return 1;
     }
 
-    shuffle(moves.begin(), moves.end(), RNG);
     size_t size = moves.size();
     size = min(size, (size_t)max_moves);
 
     for (size_t i = 0; i < size; i++)
     {
-        board_t new_board = moves[i];
+        uint64_t random_i = RNG() % moves.size();
+        board_t new_board = moves[random_i];
+        moves[random_i] = moves.back();
+        moves.pop_back();
+
         if (!(pins_left - 1 > cache_ignore_bottom) || !bitset_cache.get(new_board))
         {
 

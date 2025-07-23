@@ -36,13 +36,17 @@ void load_config_from_args(int argc, char* argv[], struct Config& config) {
 
                 break;
             }
-        
+
+
         default:
             break;
         }
         
         if (arg == "-m" || arg == "--memory") {
             expect_arg = 'm';
+        }
+        if (arg == "-q" || arg == "--quiet") {
+            config.print_solution = false;
         }
 
 

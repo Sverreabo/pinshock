@@ -23,9 +23,9 @@ if system("make -j 8"):
 
 x_verdier = []
 y_verdier = []
-for i in range(100, 20000, 200):
+for i in range(1, 100, 5):
     sleep(0.5)
-    results = [Proposal(i).fitness() for _ in range(100)]
+    results = [Proposal(i).fitness() for _ in range(10)]
     fitness = sum(results) / len(results)
 
     plusminus = (max(results) - min(results)) / 2

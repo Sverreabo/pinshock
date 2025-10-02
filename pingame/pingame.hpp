@@ -27,8 +27,9 @@ class Game
 
     uint64_t num_iterations = 0;
 
-    uint64_t cache_clear_size = 10000 * 1000;
+    uint64_t cache_clear_size = 8000;
     BitSet::BitSet bitset_cache;
+    uint64_t cache_usage = 0;
     
     int max_moves = 2;
     int cache_ignore_bottom = 8;

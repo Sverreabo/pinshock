@@ -203,10 +203,10 @@ void Game::solve()
 // Returns 1 if solution found
 int Game::solveRecursive(board_t _board, int pins_left)
 {
-    if (num_iterations % cache_clear_size == 0)
+    if (cache_usage > cache_clear_size)
     {
-        cout << "Cache cleared\n";
         bitset_cache.clear();
+        cache_usage = 0;
     }
     num_iterations++;
 
@@ -239,6 +239,7 @@ int Game::solveRecursive(board_t _board, int pins_left)
     if (pins_left > cache_ignore_bottom)
     {
         bitset_cache.set(_board);
+        cache_usage++;
     }
 
     return 0;

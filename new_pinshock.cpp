@@ -7,7 +7,7 @@ using namespace std;
 
 class Config {
 public:
-    uint64_t cache_clear_size = 10000 * 1000;
+    uint64_t cache_clear_size = 8000;
     bool print_solution = true;
 } global_config;
 

@@ -46,6 +46,10 @@ public:
     
     void printGameBoard();
     void printSolution();
+    void printSolution(unsigned columns);
+
+    std::vector<board_t> getSolution();
+
     board_t getBoard();
     std::vector<board_t> getMoves();
     std::vector<board_t> getMovesFromBoard(board_t board);

@@ -41,7 +41,14 @@ void printBoard(board_t board, unsigned height, unsigned width)
     }
 }
 
-
+void printRowFromBoard(board_t board, unsigned row, unsigned width, unsigned height) {
+    unsigned pos = (width * (height - row)) - 1;
+    for (unsigned x = 0; x < width; x++) {
+        bool bit = (board >> pos) & 0x1;
+        cout << (bit ? "\u26AA" : "\u26AB");
+        pos -= 1;
+    }
+}
 
 board_t genHorizontalMask(unsigned left_col, unsigned right_col, unsigned height, unsigned width)
 {

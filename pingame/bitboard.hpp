@@ -15,6 +15,7 @@ constexpr unsigned SIZE_BITS_BOARD_T = (sizeof(board_t) * 8);
 bool fitsInBoard(unsigned height, unsigned width);
 board_t convertBoard(std::vector<std::vector<bool>> bool_board, unsigned height, unsigned width);
 void printBoard(board_t board, unsigned height, unsigned width);
+void printRowFromBoard(board_t board, unsigned row, unsigned width, unsigned height);
 board_t genHorizontalMask(unsigned left_col, unsigned right_col, unsigned height, unsigned width);
 unsigned countBoard(board_t board);
 

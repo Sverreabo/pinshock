@@ -77,6 +77,45 @@ void Game::printSolution() {
     }
 }
 
+void Game::printSolution(unsigned columns) {
+
+    // Naming the columns and rows that are made out of gameboards 'big-' to 
+    //  seperate them from cols and rows made out of 1 and 0 in each gameboard
+    const unsigned N_BIG_COLS = columns;
+    const unsigned N_BIG_ROWS = (n_start_pins % N_BIG_COLS == 0) ? 
+                        (n_start_pins / N_BIG_COLS) : (n_start_pins / N_BIG_COLS + 1);
+
+    const std::string separator((width*2 + 3) * N_BIG_COLS - 1, '-');
+    
+    for (unsigned big_row = 0; big_row < N_BIG_ROWS; big_row++) {
+        for (unsigned row = 0; row < height; row++) {
+            for (unsigned big_col = 0; big_col < N_BIG_COLS; big_col++) {
+
+                    unsigned pos = (N_BIG_COLS * big_row + big_col);
+                    if (pos >= n_start_pins) {
+                        printRowFromBoard((board_t)0, row, width, height);
+                    } else {
+                        const unsigned index = n_start_pins - pos;
+                        printRowFromBoard(solution.at(index), row, width, height);
+                    }
+                    cout << " | ";
+
+                }
+            cout << "\n";
+        }
+        
+        cout << separator << "\n";
+    }
+}
+
+vector<board_t> Game::getSolution() {
+    vector<board_t> result;
+    for (board_t& board : solution) {
+        result.push_back(board);
+    }
+    return result;
+}
+
 board_t Game::getBoard()
 {
     return board;
@@ -215,7 +254,6 @@ int Game::solveRecursive(board_t _board, int pins_left)
 
     if (pins_left == 1)
     {
-        cout << "\nPins left: " << pins_left << "\n";
         return 1;
     }
 

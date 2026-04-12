@@ -1,11 +1,29 @@
-pinshock.out: pinshock.cpp
-	g++ -Wall -std=gnu++2a -O3 -s pinshock.cpp -o pinshock.out 
+EXE := new_pinshock.out
+PROFILE := profile.out
+OBJS := new_pinshock.o pingame/pingame.o pingame/bitboard.o bitset/bitset.o
+CXX := g++
+CXXFLAGS := -Wall -Werror -std=gnu++2a -O2
 
-run: pinshock.out
-	./pinshock.out
+all: $(EXE)
 
-time: pinshock.out
-	time ./pinshock.out
+profile: CXXFLAGS = -Wall -Werror -std=gnu++2a -O0 -pg
+profile: $(PROFILE)
+	time ./$(PROFILE) -q
+	gprof $(PROFILE) > profile.txt
+	gprof $(PROFILE) gmon.out | gprof2dot -s -w | dot -Tpng -o output.png && code output.png
 
-perf: pinshock.out
-	sudo perf stat ./pinshock.out
+run: $(EXE)
+	./$(EXE)
+
+$(EXE): $(OBJS)
+	$(CXX) $(OBJS) -o $(EXE)
+
+$(PROFILE): $(OBJS)
+	$(CXX) $(OBJS) -o $(PROFILE) -pg
+
+
+$(OBJS): %.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+clean:
+	rm -f $(OBJS) $(EXE) $(PROFILE) gmon.out

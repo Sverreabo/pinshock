@@ -6,19 +6,36 @@ import random
 from time import perf_counter, sleep
 from os import system
 
-EXECUTABLE = "./pinshock.out"
+EXECUTABLE = "./new_pinshock.out"
 
 class Proposal:
-    def __init__(self, cache_bottom_ignore):
-        self.cache_bottom_ignore = cache_bottom_ignore
+    def __init__(self, cache_clear_size):
+        self.cache_clear_size = cache_clear_size
 
     def fitness(self):
         t0 = perf_counter()
-        system(f"{EXECUTABLE} {self.cache_bottom_ignore} 0 >/dev/null")
+        if system(f"{EXECUTABLE} -m {self.cache_clear_size} >/dev/null"):
+            exit(1)
         return perf_counter() - t0
 
-for i in range(0, 10):
-    sleep(1)
+if system("make -j 8"):
+    exit(1)
+
+x_verdier = []
+y_verdier = []
+for i in range(1, 100, 5):
+    sleep(0.5)
     results = [Proposal(i).fitness() for _ in range(10)]
     fitness = sum(results) / len(results)
-    print(f"{i}: {fitness:.3f}s")
+
+    plusminus = (max(results) - min(results)) / 2
+
+    print(f"{i}: {fitness:.3f} +- {plusminus:.3f}", flush=True)
+
+
+    x_verdier.append(i)
+    y_verdier.append(fitness)
+
+import matplotlib.pyplot as plt
+plt.plot(x_verdier, y_verdier)
+plt.savefig("fig3.png")

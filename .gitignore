@@ -3,4 +3,5 @@
 .vscode
 build
 __pycache__
-*.csv
+scripts/*.csv
+scripts/*.png

@@ -2,7 +2,7 @@ from time import perf_counter
 from os import system
 
 EXECUTABLE = "./new_pinshock.out -q"
-T_STOP = 60
+T_STOP = 120
 
 t0 = perf_counter()
 runs = 0
@@ -10,7 +10,8 @@ runs = 0
 times = []
 
 while perf_counter() - t0 < T_STOP:
-    system(EXECUTABLE)
+    if system(EXECUTABLE):
+        exit(1)
     runs += 1
 
 t_total = perf_counter() - t0

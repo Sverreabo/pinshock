@@ -6,7 +6,7 @@ import random
 from time import perf_counter, sleep
 from os import system
 
-EXECUTABLE = ".././new_pinshock.out"
+EXECUTABLE = ".././pinshock.out"
 
 class Proposal:
     def __init__(self, cache_clear_size):

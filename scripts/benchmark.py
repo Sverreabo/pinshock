@@ -1,7 +1,7 @@
 from time import perf_counter
 from os import system
 
-EXECUTABLE = "./new_pinshock.out -q"
+EXECUTABLE = "./pinshock.out -q"
 T_STOP = 120
 
 t0 = perf_counter()

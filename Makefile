@@ -1,6 +1,6 @@
-EXE := new_pinshock.out
+EXE := pinshock.out
 PROFILE := profile.out
-OBJS := new_pinshock.o pingame/pingame.o pingame/bitboard.o bitset/bitset.o
+OBJS := pinshock.o pingame/pingame.o pingame/bitboard.o bitset/bitset.o
 CXX := g++
 CXXFLAGS := -Wall -Werror -std=gnu++2a -O2
 

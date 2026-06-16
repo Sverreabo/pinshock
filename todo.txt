@@ -1,0 +1,7 @@
+
+- Makefile does not account for .hpp files
+- Command line options
+- inconsistent tabs and spaces
+
+
+pinshock --memory (size in KB)

@@ -3,8 +3,8 @@ project(pinshock LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(new_pinshock
-    new_pinshock.cpp
+add_executable(pinshock
+    pinshock.cpp
 
     pingame/pingame.hpp
     pingame/pingame.cpp
@@ -16,4 +16,4 @@ add_executable(new_pinshock
     bitset/bitset.cpp
 )
 
-target_compile_features(new_pinshock PRIVATE cxx_std_23)
+target_compile_features(pinshock PRIVATE cxx_std_23)

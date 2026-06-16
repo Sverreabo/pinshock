@@ -89,5 +89,5 @@ int main(int argc, char* argv[]) {
 
     game.solve();
 
-    if (global_config.print_solution) game.printSolution();
+    if (global_config.print_solution) game.printSolution(7);
 }

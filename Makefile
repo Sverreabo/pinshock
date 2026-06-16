@@ -1,12 +1,12 @@
-EXE := new_pinshock.out
+EXE := pinshock.out
 PROFILE := profile.out
-OBJS := new_pinshock.o pingame/pingame.o pingame/bitboard.o bitset/bitset.o
+OBJS := pinshock.o pingame/pingame.o pingame/bitboard.o bitset/bitset.o
 CXX := g++
 CXXFLAGS := -Wall -Werror -std=gnu++2a -O2
 
 all: $(EXE)
 
-profile: CXXFLAGS = -Wall -Werror -std=gnu++2a -O0 -pg
+profile: CXXFLAGS = -Wall -Werror -std=gnu++2a -O2 -pg
 profile: $(PROFILE)
 	time ./$(PROFILE) -q
 	gprof $(PROFILE) > profile.txt
@@ -14,6 +14,9 @@ profile: $(PROFILE)
 
 run: $(EXE)
 	./$(EXE)
+
+benchmark: clean $(EXE)
+	python3 scripts/benchmark.py
 
 $(EXE): $(OBJS)
 	$(CXX) $(OBJS) -o $(EXE)

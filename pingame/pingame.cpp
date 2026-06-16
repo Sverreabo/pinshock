@@ -12,7 +12,15 @@ namespace PinGame
 {
 
 random_device os_seed;
-auto RNG = default_random_engine{(long unsigned)os_seed()};
+
+uint64_t rng_state = os_seed();
+
+inline uint64_t fast_rng() {
+    rng_state ^= rng_state << 13;
+    rng_state ^= rng_state >> 7;
+    rng_state ^= rng_state << 17;
+    return rng_state;
+}
 
 
 Game::Game(vector<vector<bool>>& bool_board)
@@ -37,6 +45,7 @@ void Game::Construct(vector<vector<bool>>& bool_board, vector<vector<bool>>& leg
     n_slots = height * width;
     
     solution.resize(n_slots);
+    moveBuffers.resize(n_slots);
     
     board = convertBoard(bool_board, height, width);
     n_start_pins = countBoard(board);
@@ -123,12 +132,13 @@ board_t Game::getBoard()
 
 
 vector<board_t> Game::getMoves() {
-    return getMovesFromBoard(board);
+    std::vector<board_t> moves;
+    getMovesFromBoard(board, moves);
+    return moves;
 }
 
-vector<board_t> Game::getMovesFromBoard(board_t _board)
+void Game::getMovesFromBoard(board_t _board, std::vector<board_t>& moves)
 {
-    static vector<board_t> moves;
     moves.clear();
 
     board_t board_lshift = _board << width;
@@ -216,8 +226,6 @@ vector<board_t> Game::getMovesFromBoard(board_t _board)
             result >>= 1;
         }
     }
-
-    return moves;
 }
 
 void Game::solve()
@@ -249,7 +257,9 @@ int Game::solveRecursive(board_t _board, int pins_left)
     }
     num_iterations++;
 
-    vector<board_t> moves = getMovesFromBoard(_board);
+    auto& moves = moveBuffers.at(pins_left);
+    getMovesFromBoard(_board, moves);
+
     solution[pins_left] = _board;
 
     if (pins_left == 1)
@@ -262,7 +272,7 @@ int Game::solveRecursive(board_t _board, int pins_left)
 
     for (size_t i = 0; i < size; i++)
     {
-        uint64_t random_i = RNG() % moves.size();
+        uint64_t random_i = fast_rng() % moves.size();
         board_t new_board = moves[random_i];
         moves[random_i] = moves.back();
         moves.pop_back();

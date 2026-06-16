@@ -10,7 +10,7 @@
 namespace PinGame
 {
 
-class Game
+class Game final
 {
     board_t board;
     unsigned width, height;
@@ -34,6 +34,9 @@ class Game
     int max_moves = 2;
     int cache_ignore_bottom = 8;
 
+    std::vector<std::vector<board_t>> moveBuffers;
+    
+
 
     int solveRecursive(board_t _board, int pins_left);
 
@@ -52,7 +55,7 @@ public:
 
     board_t getBoard();
     std::vector<board_t> getMoves();
-    std::vector<board_t> getMovesFromBoard(board_t board);
+    void getMovesFromBoard(board_t board, std::vector<board_t>& moves);
     void solve();
 
     void set_cache_clear_size(uint64_t n);

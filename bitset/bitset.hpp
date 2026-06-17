@@ -14,7 +14,7 @@ class BitSet {
 public:
 	uint64_t size_bits;
 	uint64_t n_buckets;
-	baseint* buckets;
+	baseint* buckets = nullptr;
 
 	BitSet();
 

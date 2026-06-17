@@ -25,7 +25,9 @@ void BitSet::init(uint64_t _n_buckets) {
 }
 
 BitSet::~BitSet() {
-	delete[] buckets;
+	if (buckets != nullptr) {
+		delete[] buckets;
+	}
 }
 
 void BitSet::set(uint64_t location) {

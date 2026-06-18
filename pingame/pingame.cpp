@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <algorithm>
+#include <bit>
 #include <random>
 
 #include "pingame.hpp"
@@ -149,40 +149,37 @@ void Game::getMovesFromBoard(board_t _board, std::vector<board_t>& moves)
     if (result != 0)
     {
         result >>= double_width;
-        unsigned position = 0;
         while (result != 0)
         {
-            if (result & 1)
-            {
+            // Gives index of last 1
+            int trailing_zeros = std::countr_zero(result);
 
-                board_t move_slot = ((board_t)1 << position); // The slot the pin will be moved to
-                board_t new_board = _board ^ move_slot ^ (move_slot << width) ^ (move_slot << double_width);
+            board_t move_slot = ((board_t)1 << trailing_zeros); // The slot the pin will be moved to
+            board_t new_board = _board ^ move_slot ^ (move_slot << width) ^ (move_slot << double_width);
 
-                moves.push_back(new_board);
-            }
-            position++;
-            result >>= 1;
+            moves.push_back(new_board);
+            
+            // Removes last 1
+            result &= (result - 1);
         }
     }
 
     // Upwards, eg. when a pin is below another pin which is below an empty slot
     result = (~_board) & board_lshift & board_2lshift & (full_board);
-    if (result != 0)
-    {
-        unsigned position = 0;
-        while (result != 0)
-        {
-            if (result & 1)
-            {
-                board_t move_slot = ((board_t)1 << position); // The slot the pin will be moved to
-                board_t new_board = _board ^ move_slot ^ (move_slot >> width) ^ (move_slot >> double_width);
+    
+    while (result != 0) {
+        int trailing_zeros = std::countr_zero(result);
 
-                moves.push_back(new_board);
-            }
-            position++;
-            result >>= 1;
-        }
+        board_t move_slot = ((board_t)1 << trailing_zeros); // The slot the pin will be moved to
+        board_t new_board = _board ^ move_slot ^ (move_slot >> width) ^ (move_slot >> double_width);
+
+        moves.push_back(new_board);
+
+        result &= (result - 1);
+
+    
     }
+    
 
     // Preparing variables for sideways movement
     board_lshift = _board << 1;
@@ -193,39 +190,35 @@ void Game::getMovesFromBoard(board_t _board, std::vector<board_t>& moves)
     if (result != 0)
     {
         result >>= 2;
-        unsigned position = 0;
+
         while (result != 0)
         {
-            if (result & 1)
-            {
-                board_t move_slot = ((board_t)1 << position); // The slot the pin will be moved to
-                board_t new_board = _board ^ move_slot ^ (move_slot << 1) ^ (move_slot << 2);
+            int trailing_zeros = std::countr_zero(result);
 
-                moves.push_back(new_board);
-            }
-            position++;
-            result >>= 1;
+            board_t move_slot = ((board_t)1 << trailing_zeros); // The slot the pin will be moved to
+            board_t new_board = _board ^ move_slot ^ (move_slot << 1) ^ (move_slot << 2);
+
+            moves.push_back(new_board);
+            
+            result &= (result - 1);
         }
     }
     // Left, eg. when a pin has another pin to its left which has an empty pin to its left
     result = (~_board) & board_lshift & board_2lshift & Cleft_mask;
 
-    if (result != 0)
+    while (result != 0)
     {
-        unsigned position = 0;
-        while (result != 0)
-        {
-            if (result & 1)
-            {
-                board_t move_slot = ((board_t)1 << position); // The slot the pin will be moved to
-                board_t new_board = _board ^ move_slot ^ (move_slot >> 1) ^ (move_slot >> 2);
+        int trailing_zeros = std::countr_zero(result);
 
-                moves.push_back(new_board);
-            }
-            position++;
-            result >>= 1;
-        }
+        board_t move_slot = ((board_t)1 << trailing_zeros); // The slot the pin will be moved to
+        board_t new_board = _board ^ move_slot ^ (move_slot >> 1) ^ (move_slot >> 2);
+
+        moves.push_back(new_board);
+
+        result &= (result - 1);
+    
     }
+    
 }
 
 void Game::solve()

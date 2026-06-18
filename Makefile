@@ -2,7 +2,7 @@ EXE := pinshock.out
 PROFILE := profile.out
 OBJS := pinshock.o pingame/pingame.o pingame/bitboard.o bitset/bitset.o
 CXX := g++
-CXXFLAGS := -Wall -Werror -std=gnu++2a -O2
+CXXFLAGS := -Wall -Werror -std=gnu++2a -O3 -march=native
 
 all: $(EXE)
 

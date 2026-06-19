@@ -239,6 +239,10 @@ void Game::solve()
     }
 }
 
+inline uint64_t rangeReduce(uint64_t number, uint64_t rangeMax) {
+    return ((unsigned __int128)number * rangeMax) >> 64;
+}
+
 
 // Returns 1 if solution found
 int Game::solveRecursive(board_t _board, int pins_left)
@@ -265,7 +269,7 @@ int Game::solveRecursive(board_t _board, int pins_left)
 
     for (size_t i = 0; i < size; i++)
     {
-        uint64_t random_i = fast_rng() % moves.size();
+        uint64_t random_i = rangeReduce(fast_rng(), moves.size());
         board_t new_board = moves[random_i];
         moves[random_i] = moves.back();
         moves.pop_back();
